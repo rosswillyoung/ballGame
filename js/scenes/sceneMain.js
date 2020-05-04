@@ -14,6 +14,7 @@ class SceneMain extends Phaser.Scene {
     this.player.setStatic(true);
     this.ballCategory = this.matter.world.nextCategory();
     this.platformCategory = this.matter.world.nextCategory();
+    this.bulletGroup = this.matter.world.nextGroup();
     this.input.on(
       "pointerdown",
       (e) => {
@@ -48,11 +49,28 @@ class SceneMain extends Phaser.Scene {
     this.platform2.setStatic(true);
     this.platform2.setAngle(325);
 
-    this.matter.world.on("collision", () => {
-      console.log("collision");
-    });
+    // this.matter.world.on("collision", (e) => {
+    //   console.log(e);
+    // });
     this.makeBalls();
 
+    this.matter.world.on(
+      "collisionstart",
+      (e, bodyA, bodyB) => {
+        if (bodyA.isStatic || bodyB.isStatic) {
+          console.log(bodyA.gameObject.scale);
+        } else if (
+          bodyA.gameObject.scale > 0.2 &&
+          bodyB.gameObject.scale > 0.2
+        ) {
+        } else {
+          console.log(bodyA.gameObject.scale, bodyB.gameObject.scale);
+          bodyA.gameObject.destroy();
+          bodyB.gameObject.destroy();
+        }
+      },
+      this
+    );
     // this.platforms = this.matter.add.staticGroup();
     // this.platform = this.platforms
     //   .create(game.config.width / 2, 500, "platform")
@@ -77,15 +95,27 @@ class SceneMain extends Phaser.Scene {
     }
   }
   shootBullet(e) {
-    console.log(e);
+    // console.log(e);
+    this.bullet = this.matter.add.image(this.player.x, this.player.y, "ball1");
+
+    let speed = 5;
     let angle = Phaser.Math.Angle.BetweenPoints(this.player, e);
-    this.bullet = this.matter.add.image(
-      this.player.x,
-      this.player.y - 50,
-      "ball1"
-    );
     this.bullet.setScale(0.1);
-    this.bullet.setAngularVelocity(angle);
+    this.bullet.setCircle(5);
+    this.bullet.setVelocityX(Math.cos(angle) * speed);
+    this.bullet.setVelocityY(Math.sin(angle) * speed);
     this.bullet.setIgnoreGravity(true);
+    // this.bullet.setIgnoreGravity(true);
+    // this.bullet.setOnCollide((e) => {
+    //   if (e.bodyB.isStatic || e.bodyA.isStatic) {
+    //     console.log("Static");
+    //   } else {
+    //     console.log(e.bodyA);
+    //     console.log(e.bodyB.gameObject.body);
+    //     // e.bodyA.setStatic(true);
+    //     this.bullet.destroy();
+    //   }
+    //   // console.log(e);
+    // });
   }
 }
