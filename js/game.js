@@ -7,6 +7,7 @@ let config = {
     default: "matter",
     matter: {
       debug: true,
+      gravity: { y: 0.3 },
     },
   },
   scene: [SceneLoad, SceneMain],

@@ -5,54 +5,53 @@ class SceneMain extends Phaser.Scene {
 
   preload() {}
   create() {
-    this.ball = this.matter.add.image(
+    this.player = this.matter.add.image(
       game.config.width / 2,
-      game.config.height / 2,
+      game.config.height - 20,
       "ball1"
     );
-    this.ball2 = this.matter.add.image(game.config.width / 2, 400, "ball1");
-    this.ball2.setCircle(45);
-    this.ball2.setScale(0.3);
-    this.ball2.setStatic(true);
-    this.cat1 = this.matter.world.nextCategory();
-    this.cat2 = this.matter.world.nextCategory();
+    this.player.setCircle(50);
+    this.player.setStatic(true);
+    this.ballCategory = this.matter.world.nextCategory();
+    this.platformCategory = this.matter.world.nextCategory();
+    this.input.on(
+      "pointerdown",
+      (e) => {
+        this.shootBullet(e);
+      },
+      this
+    );
 
-    this.ball.setCollisionCategory(this.cat1);
-    this.ball2.setCollisionCategory(this.cat2);
-    this.matter.world.on("collisionstart", (event) => {
-      console.log(event);
-    });
+    // this.ball.setCollisionCategory(this.platformCategory);
+    // this.matter.world.on("collisionstart", (event) => {
+    //   console.log(event);
+    // });
 
-    this.ball.setCircle(45);
-    this.ball.setScale(0.3);
-    this.ball.setBounce(0.5);
-
+    // this.matter.world.setGravity(0, 1);
     // let shape = this.cache.json.get("shape");
     // console.log(shape);
     // this.matter.add.sprite(200, 300, "ball", { shape: shape.ball });
 
-    this.platform = this.matter.add.image(
-      game.config.width / 2,
-      500,
-      "platform"
-    );
+    this.platform = this.matter.add.image(60, 200, "platform");
 
     this.platform.setStatic(true);
-    this.platform.setScale(0.2);
+    this.platform.setScale(0.4);
     this.platform.setAngle(35);
 
     this.platform2 = this.matter.add.image(
-      game.config.width / 2,
-      550,
+      game.config.width - 60,
+      300,
       "platform"
     );
 
+    this.platform2.setScale(0.4);
     this.platform2.setStatic(true);
-    this.platform2.setScale(0.5);
+    this.platform2.setAngle(325);
 
     this.matter.world.on("collision", () => {
       console.log("collision");
     });
+    this.makeBalls();
 
     // this.platforms = this.matter.add.staticGroup();
     // this.platform = this.platforms
@@ -64,9 +63,29 @@ class SceneMain extends Phaser.Scene {
     // this.platform.refreshBody();
   }
 
-  update() {
-    if (this.ball.y >= 500) {
-      this.ball.setStatic(true);
+  update() {}
+  makeBalls() {
+    this.balls = [];
+    let x = 0;
+    for (let i = 40; i < 400; i += 40) {
+      this.balls[x] = this.matter.add.image(i, 20, "ball1");
+      this.balls[x].setCollisionCategory(this.ballCategory);
+      this.balls[x].setCircle(45);
+      this.balls[x].setScale(0.3);
+      this.balls[x].setBounce(0.5);
+      x++;
     }
+  }
+  shootBullet(e) {
+    console.log(e);
+    let angle = Phaser.Math.Angle.BetweenPoints(this.player, e);
+    this.bullet = this.matter.add.image(
+      this.player.x,
+      this.player.y - 50,
+      "ball1"
+    );
+    this.bullet.setScale(0.1);
+    this.bullet.setAngularVelocity(angle);
+    this.bullet.setIgnoreGravity(true);
   }
 }
