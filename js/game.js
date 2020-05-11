@@ -1,3 +1,4 @@
+let emitter, gameOver;
 let config = {
   type: Phaser.AUTO,
   width: 400,
@@ -10,7 +11,7 @@ let config = {
       gravity: { y: 0.1 },
     },
   },
-  scene: [SceneLoad, SceneMain],
+  scene: [SceneLoad, SceneMain, SceneOver],
 };
 
 let game = new Phaser.Game(config);

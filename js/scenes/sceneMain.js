@@ -5,9 +5,10 @@ class SceneMain extends Phaser.Scene {
 
   preload() {}
   create() {
+    emitter = new Phaser.Events.EventEmitter();
     this.bullets = [];
     this.balls = [];
-    this.gameOver = false;
+    gameOver = false;
     let points = 0;
     this.pointsText = this.add
       .text(game.config.width / 2, 25, "Points: 0", {
@@ -25,9 +26,6 @@ class SceneMain extends Phaser.Scene {
     this.ballCategory = this.matter.world.nextCategory();
     this.platformCategory = this.matter.world.nextCategory();
     this.bulletGroup = this.matter.world.nextGroup();
-    if (this.game.input.activePointer.isDown) {
-      this.shootBullet(e);
-    }
 
     this.input.on(
       "pointerdown",
@@ -89,9 +87,8 @@ class SceneMain extends Phaser.Scene {
   update() {
     for (let i = 0; i < this.balls.length; i++) {
       if (this.balls[i].body && this.balls[i].y > this.game.config.height) {
-        this.gameOver = true;
-        this.scene.pause();
-        // console.log(this.gameOver);
+        gameOver = true;
+        this.scene.start("SceneOver");
       }
     }
   }
@@ -99,7 +96,6 @@ class SceneMain extends Phaser.Scene {
     let x = 0;
     for (let i = 40; i < 400; i += 40) {
       this.balls[x] = this.matter.add.image(i, 20, "ball1");
-      this.balls[x].setCollisionCategory(this.ballCategory);
       this.balls[x].setCircle(45);
       this.balls[x].setScale(0.3);
       this.balls[x].setBounce(0.5);
@@ -108,7 +104,6 @@ class SceneMain extends Phaser.Scene {
   }
   shootBullet(e) {
     // console.log(e.x, e.y);
-    console.log(e);
     this.bullet = this.matter.add.image(this.player.x, this.player.y, "ball1");
     this.bullet.setOrigin(0.5, 0.5);
 
